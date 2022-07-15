@@ -7,7 +7,11 @@ import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid'
 import { width } from '@mui/system';
 import Container from '@mui/material/Container';
 
-function App() {
+type Props = {
+  WebSocket: WebSocket
+}
+
+function App(props: Props) {
   const commentSettings: CommentSetting[] = [
     new CommentSetting("hoge", "joge", "fuga"),
     new CommentSetting("hoge", "joge", "fuga"),
@@ -28,12 +32,12 @@ function App() {
   ]
 
   return (
-    <Container style={{ width: '100%', height: '100%', minWidth: 200, minHeight: 200 }}>
-      <Container style={{ padding: 20, width: '80%', height: '80vh', alignItems: 'center', justifyContent: 'center' }}>
-        <CommentList CommentSettings={commentSettings} />
+    <Container style={{ width: '100vh', height: '100vh', minWidth: 200, minHeight: 200 }}>
+      <Container style={{ padding: 20, width: '80%', height: '80%', alignItems: 'center', justifyContent: 'center' }}>
+        <CommentList CommentSettings={commentSettings} WebSocket={props.WebSocket} />
       </Container>
-      <Container style={{ padding: 20, width: '80%', height: '10vh', alignItems: 'center', justifyContent: 'center' }}>
-        <SendCommentForm />
+      <Container style={{ padding: 20, width: '80%', height: '10%', alignItems: 'center', justifyContent: 'center' }}>
+        <SendCommentForm WebSocket={props.WebSocket} />
       </Container>
     </Container>
   );

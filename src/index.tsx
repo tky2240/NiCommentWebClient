@@ -7,9 +7,10 @@ import reportWebVitals from './reportWebVitals';
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+const socket = new WebSocket('ws://localhost:8080/ws');
 root.render(
   <React.StrictMode>
-    <App />
+    <App WebSocket={socket} />
   </React.StrictMode>
 );
 

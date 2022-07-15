@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Divider from '@mui/material/Divider';
@@ -23,6 +23,7 @@ class CommentSetting {
 
 type Props = {
     CommentSettings: CommentSetting[]
+    WebSocket: WebSocket
 }
 
 const CommentList = (props: Props) => {
@@ -42,10 +43,24 @@ const CommentList = (props: Props) => {
             </div>
         )
     }
+    const [commentList, setComment] = useState(props.CommentSettings.map(x => CommentListItem(x)));
+    const socket = props.WebSocket
+    socket.onopen = function () {
+        setComment([...commentList, CommentListItem(new CommentSetting("test", "test", "connect server"))]);
+    }
+    socket.onmessage = function (event) {
+        const recieve = JSON.parse(event.data)
+        setComment([...commentList, CommentListItem(new CommentSetting(recieve.username, recieve.username, recieve.message))]);
+    }
+    const scrollRef = useRef<null | HTMLDivElement>(null)
+    const listRef = useRef<null | HTMLUListElement>(null)
+    useEffect(() => {
+        scrollRef.current?.scroll({ top: listRef.current?.clientHeight, behavior: "smooth" })
+    }, [commentList]);
     return (
-        <Paper style={{ maxHeight: '100%', overflow: 'auto' }}>
-            <List sx={{ bgcolor: 'background.paper' }}
-                children={props.CommentSettings.map(x => CommentListItem(x))} />
+        <Paper style={{ maxHeight: '100%', overflow: 'auto' }} ref={scrollRef} >
+            <List sx={{ bgcolor: 'background.paper' }} ref={listRef}
+                children={commentList} />
         </Paper>
     );
 }
