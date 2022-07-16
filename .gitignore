@@ -21,3 +21,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+src/keycloak.json
+public/keycloak.json
+.vscode/launch.json

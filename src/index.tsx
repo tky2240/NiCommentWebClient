@@ -3,15 +3,19 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { ReactKeycloakProvider, useKeycloak } from '@react-keycloak/web'
+import CurrentKeycloak from './Keycloak'
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
-const socket = new WebSocket('ws://localhost:8080/ws');
+
 root.render(
-  <React.StrictMode>
-    <App WebSocket={socket} />
-  </React.StrictMode>
+  <ReactKeycloakProvider authClient={CurrentKeycloak} initOptions={{ onLoad: 'login-required' }}>
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  </ReactKeycloakProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function
