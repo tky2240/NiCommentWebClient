@@ -5,21 +5,13 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
-import { CommentList, CommentSetting } from './CommentList';
+import { CommentList, Comment } from './CommentList';
 
 type Props = {
     WebSocket: WebSocket
-}
-
-class Message {
+    UserID: string
     UserName: string
-    Message: string
-    isFixedComment: boolean
-    constructor(username: string, message: string, isFixedComment: boolean) {
-        this.UserName = username;
-        this.Message = message;
-        this.isFixedComment = isFixedComment
-    }
+    IsOpen: boolean
 }
 
 const SendCommentForm = (props: Props) => {
@@ -27,18 +19,23 @@ const SendCommentForm = (props: Props) => {
     const [message, setMessage] = useState("");
     const sendMessage = () => {
         if (message != "") {
-            socket.send(JSON.stringify(new Message("ts", message, false)));
+            socket.send(JSON.stringify(new Comment(props.UserID, props.UserName, message, false)));
         }
         setMessage("");
     };
-    return (
-        <Stack direction="row" justifyContent='center' spacing={5}>
-            <TextField style={{ width: '60%' }} id="outlined-search" label="コメント" type='search' value={message} onChange={(e: ChangeEvent) => setMessage((e.target as HTMLInputElement).value)} />
-            <Button style={{ width: '10%' }} variant="contained" endIcon={<SendIcon />} onClick={sendMessage}>
-                送信
-            </Button>
-        </Stack>
-    );
+    if (props.IsOpen) {
+        return (
+            <Stack direction="row" justifyContent='center' spacing={5}>
+                <TextField style={{ width: '60%' }} id="outlined-search" label="コメント" type='search' value={message} onChange={(e: ChangeEvent) => setMessage((e.target as HTMLInputElement).value)} />
+                <Button style={{ width: '10%' }} variant="contained" endIcon={<SendIcon />} onClick={sendMessage}>
+                    送信
+                </Button>
+            </Stack>
+        );
+    } else {
+        return (<div>接続終了</div>)
+    }
+
 }
 
 export default SendCommentForm;

@@ -8,57 +8,59 @@ import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import { Paper } from '@mui/material';
 import { alignProperty } from '@mui/material/styles/cssUtils';
+import { JsxEmit } from 'typescript';
 
-class CommentSetting {
+class Comment {
     UserID: string;
     UserName: string;
     Message: string;
-
-    constructor(userID: string, username: string, message: string) {
+    IsFixedComment: boolean;
+    constructor(userID: string, userName: string, message: string, isFixedComment: boolean) {
         this.UserID = userID;
-        this.UserName = username;
+        this.UserName = userName;
         this.Message = message;
+        this.IsFixedComment = isFixedComment;
     }
 }
 
 type Props = {
-    CommentSettings: CommentSetting[]
+    CommentSettings: Comment[]
     WebSocket: WebSocket
+    UserID: string
+    UserName: string
 }
 
 const CommentList = (props: Props) => {
-    const CommentListItem = (commentSetting: CommentSetting) => {
+    const CommentListItem = (comment: Comment) => {
         return (
             <div>
                 <ListItem alignItems="flex-start">
                     <ListItemAvatar>
-                        <Avatar children={commentSetting.UserName.substring(0, 1)} />
+                        <Avatar children={comment.UserName.substring(0, 1)} />
                     </ListItemAvatar>
                     <ListItemText
-                        primary={commentSetting.UserName}
-                        secondary={commentSetting.Message}
+                        primary={comment.UserName}
+                        secondary={comment.Message}
                     />
                 </ListItem>
                 <Divider />
             </div>
         )
     }
-    const [commentList, setComment] = useState(props.CommentSettings.map(x => CommentListItem(x)));
     const socket = props.WebSocket
-    socket.onopen = function () {
-        setComment([...commentList, CommentListItem(new CommentSetting("test", "test", "connect server"))]);
-    }
+    const [commentList, setComment] = useState<JSX.Element[]>([]);
     socket.onmessage = function (event) {
-        const recieve = JSON.parse(event.data)
-        setComment([...commentList, CommentListItem(new CommentSetting(recieve.username, recieve.username, recieve.message))]);
+        const recieve: Comment = JSON.parse(event.data)
+        setComment([...commentList, CommentListItem(new Comment(recieve.UserID, recieve.UserName, recieve.Message, recieve.IsFixedComment))]);
     }
+
     const scrollRef = useRef<null | HTMLDivElement>(null)
     const listRef = useRef<null | HTMLUListElement>(null)
     useEffect(() => {
         scrollRef.current?.scroll({ top: listRef.current?.clientHeight, behavior: "smooth" })
     }, [commentList]);
     return (
-        <Paper style={{ maxHeight: '100%', overflow: 'auto' }} ref={scrollRef} >
+        <Paper style={{ maxHeight: '100%', height: '100%', overflow: 'auto' }} ref={scrollRef} >
             <List sx={{ bgcolor: 'background.paper' }} ref={listRef}
                 children={commentList} />
         </Paper>
@@ -66,4 +68,4 @@ const CommentList = (props: Props) => {
 }
 
 
-export { CommentList, CommentSetting };
+export { CommentList, Comment };

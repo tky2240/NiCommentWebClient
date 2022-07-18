@@ -1,13 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { CommentList, CommentSetting } from './CommentList';
-import SendCommentForm from './SendCommentForm';
+import { CommentList, Comment } from './CommentList';
 import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid'
 import { width } from '@mui/system';
 import Container from '@mui/material/Container';
-import Keycloak from 'keycloak-js';
+import Keycloak, { KeycloakProfile } from 'keycloak-js';
 import { ReactKeycloakProvider, useKeycloak } from '@react-keycloak/web'
+import SendCommentForm from './SendCommentForm'
+import { KeyObject } from 'crypto';
+import InitializeWebSocket from './InitializeWebSocket';
 
 type Props = {
   WebSocket: WebSocket
@@ -19,7 +21,8 @@ type KeycloakState = {
 }
 
 function App() {
-  const commentSettings: CommentSetting[] = [
+  const commentSettings: Comment[] = [
+    /*new CommentSetting("hoge", "joge", "fuga"),
     new CommentSetting("hoge", "joge", "fuga"),
     new CommentSetting("hoge", "joge", "fuga"),
     new CommentSetting("hoge", "joge", "fuga"),
@@ -34,26 +37,15 @@ function App() {
     new CommentSetting("hoge", "joge", "fuga"),
     new CommentSetting("hoge", "joge", "fuga"),
     new CommentSetting("hoge", "joge", "fuga"),
-    new CommentSetting("hoge", "joge", "fuga"),
-    new CommentSetting("hoge", "joge", "fuga"),
+    new CommentSetting("hoge", "joge", "fuga"),*/
   ]
   const { keycloak, initialized } = useKeycloak();
-  if (keycloak.authenticated) {
-    const socket = new WebSocket('ws://localhost:8080/ws');
-    return (
-      <Container style={{ width: '100vh', height: '100vh', minWidth: 200, minHeight: 200 }}>
-        <Container style={{ padding: 20, width: '80%', height: '80%', alignItems: 'center', justifyContent: 'center' }}>
-          <CommentList CommentSettings={commentSettings} WebSocket={socket} />
-        </Container>
-        <Container style={{ padding: 20, width: '80%', height: '10%', alignItems: 'center', justifyContent: 'center' }}>
-          <SendCommentForm WebSocket={socket} />
-        </Container>
-      </Container>
-    );
-  } else {
+  if (!initialized) {
     return (<div> 初期化中</div>)
   }
-
+  if (!keycloak.authenticated) {
+    return (<div> 認証エラー </div>)
+  }
+  return <InitializeWebSocket Keycloak={keycloak} />
 }
-
 export default App;
