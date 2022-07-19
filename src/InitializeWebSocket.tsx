@@ -31,7 +31,7 @@ const InitializeWebSocket = (props: Props) => {
     }
     webSocket.onopen = () => {
         loadUserProfilePromise.then(profile => {
-            webSocket?.send(JSON.stringify(new Comment(props.Keycloak.idTokenParsed?.sub ?? "", profile.username ?? "", "connect server", false)));
+            webSocket?.send(JSON.stringify(new Comment(props.Keycloak.idTokenParsed?.sub ?? "", profile.username ?? "", "connect server", false, { r: 255, g: 255, b: 255, a: 1.0 })));
             setUserName(profile.username ?? "");
         }).catch(() => {
             return (<div> 認証エラー </div>)
@@ -42,10 +42,10 @@ const InitializeWebSocket = (props: Props) => {
     }
     return (
         <Container style={{ width: '100vh', height: '100vh', minWidth: 200, minHeight: 200 }}>
-            <Container style={{ padding: 20, width: '80%', height: '80%', alignItems: 'center', justifyContent: 'center' }}>
+            <Container style={{ padding: 20, width: '80%', height: '75%', alignItems: 'center', justifyContent: 'center' }}>
                 <CommentList CommentSettings={commentSettings} WebSocket={webSocket} UserID={props.Keycloak.idTokenParsed?.sub ?? ""} UserName={userName} />
             </Container>
-            <Container style={{ padding: 20, width: '80%', height: '10%', alignItems: 'center', justifyContent: 'center' }}>
+            <Container style={{ padding: 20, width: '80%', height: '25%', alignItems: 'center', justifyContent: 'center' }}>
                 <SendCommentForm WebSocket={webSocket} UserID={props.Keycloak.idTokenParsed?.sub ?? ""} UserName={userName} IsOpen={isOpen} />
             </Container>
         </Container>

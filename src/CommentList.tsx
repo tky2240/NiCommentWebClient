@@ -9,17 +9,26 @@ import Typography from '@mui/material/Typography';
 import { Paper } from '@mui/material';
 import { alignProperty } from '@mui/material/styles/cssUtils';
 import { JsxEmit } from 'typescript';
+import { RgbaColorPicker, RgbaColor } from "react-colorful";
 
 class Comment {
     UserID: string;
     UserName: string;
     Message: string;
     IsFixedComment: boolean;
-    constructor(userID: string, userName: string, message: string, isFixedComment: boolean) {
+    R: number;
+    G: number;
+    B: number;
+    A: number;
+    constructor(userID: string, userName: string, message: string, isFixedComment: boolean, color: RgbaColor) {
         this.UserID = userID;
         this.UserName = userName;
         this.Message = message;
         this.IsFixedComment = isFixedComment;
+        this.R = color.r;
+        this.G = color.g;
+        this.B = color.b;
+        this.A = color.a;
     }
 }
 
@@ -51,7 +60,7 @@ const CommentList = (props: Props) => {
     const [commentList, setComment] = useState<JSX.Element[]>([]);
     socket.onmessage = function (event) {
         const recieve: Comment = JSON.parse(event.data)
-        setComment([...commentList, CommentListItem(new Comment(recieve.UserID, recieve.UserName, recieve.Message, recieve.IsFixedComment))]);
+        setComment([...commentList, CommentListItem(new Comment(recieve.UserID, recieve.UserName, recieve.Message, recieve.IsFixedComment, { r: recieve.R, g: recieve.G, b: recieve.B, a: recieve.A }))]);
     }
 
     const scrollRef = useRef<null | HTMLDivElement>(null)
